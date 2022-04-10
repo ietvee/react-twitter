@@ -13,6 +13,8 @@ function App() {
   // Delete Toggle
   const dropdownRef = useRef(null);
   const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
+  // Favorite Tweet
+  const [fav, setFav] = useState([]);
 
   // Add Tweet
   const createTweet = (e) => {
@@ -25,15 +27,23 @@ function App() {
     setNewTweet(e.target.value);
   };
 
+  // Favorite Tweet - need enhancement
+  const handleChangeFav = (id) => {
+    setFav([...fav, id]);
+  };
+
   // Get Tweets
   useEffect(() => {
-    fireDb.child("Tweet").on("value", (snapshot) => {
-      if (snapshot.val() !== null) {
-        setData({ ...snapshot.val() });
-      } else {
-        setData({});
-      }
-    });
+    fireDb
+      .child("Tweet")
+      .orderByChild("created")
+      .on("value", (snapshot) => {
+        if (snapshot.val() !== null) {
+          setData({ ...snapshot.val() });
+        } else {
+          setData({});
+        }
+      });
     return () => {
       setData({});
     };
@@ -42,7 +52,7 @@ function App() {
   // Delete Tweet
   const onDelete = (id) => {
     if (window.confirm("Are you sure you want to delete it ?")) {
-      fireDb.child(`Tweet/${id}`).remove((err) => {
+      fireDb.child(`Tweet/`).remove((err) => {
         if (err) {
           toast.error(err);
         } else {
@@ -74,9 +84,9 @@ function App() {
         </span>
       </div>
       <div>
-        {Object.keys(data).map((id) => {
+        {Object.values(data).map((id, index) => {
           return (
-            <div key={id}>
+            <div key={index}>
               <ol className="tweet-list">
                 <li className="tweet-card">
                   <div className="tweet-content">
@@ -86,7 +96,7 @@ function App() {
                         <span className="username">
                           &nbsp; @User
                           <span className="tweet-time">
-                            · {data[id].created}
+                            &nbsp; · &nbsp; {id.created}
                           </span>
                         </span>
                       </span>
@@ -124,7 +134,7 @@ function App() {
                       </div>
                     </div>
                     <div className="tweet-text">
-                      <p>{data[id].content}</p>
+                      <p>{id.content}</p>
                     </div>
                     <div className="tweet-footer">
                       <span>
@@ -153,20 +163,23 @@ function App() {
                         </svg>
                         <span> 0</span>
                       </span>
-                      <span>
-                        <svg
-                          width="20"
-                          height="20"
-                          fill="currentColor"
-                          viewBox="0 0 24 24"
-                          className="r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1hdv0qi"
-                        >
-                          <g>
-                            <path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"></path>
-                          </g>
-                        </svg>
-                        <span> 0</span>
-                      </span>
+                      <button className="btn">
+                        <span onClick={() => handleChangeFav(index)}>
+                          {/* {fav.toString()} */}
+
+                          <svg
+                            width="20"
+                            height="20"
+                            fill={fav.indexOf(index) >= 0 ? "red" : "black"}
+                            viewBox="0 0 24 24"
+                            className="r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1hdv0qi"
+                          >
+                            <g>
+                              <path d="M12 21.638h-.014C9.403 21.59 1.95 14.856 1.95 8.478c0-3.064 2.525-5.754 5.403-5.754 2.29 0 3.83 1.58 4.646 2.73.814-1.148 2.354-2.73 4.645-2.73 2.88 0 5.404 2.69 5.404 5.755 0 6.376-7.454 13.11-10.037 13.157H12zM7.354 4.225c-2.08 0-3.903 1.988-3.903 4.255 0 5.74 7.034 11.596 8.55 11.658 1.518-.062 8.55-5.917 8.55-11.658 0-2.267-1.823-4.255-3.903-4.255-2.528 0-3.94 2.936-3.952 2.965-.23.562-1.156.562-1.387 0-.014-.03-1.425-2.965-3.954-2.965z"></path>
+                            </g>
+                          </svg>
+                        </span>
+                      </button>
                     </div>
                   </div>
                 </li>
