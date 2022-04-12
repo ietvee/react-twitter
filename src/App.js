@@ -36,16 +36,13 @@ function App() {
 
   // Get Tweets
   useEffect(() => {
-    fireDb
-      .child("Tweet")
-      .orderByChild("created")
-      .on("value", (snapshot) => {
-        if (snapshot.val() !== null) {
-          setData({ ...snapshot.val() });
-        } else {
-          setData({});
-        }
-      });
+    fireDb.child("Tweet").on("value", (snapshot) => {
+      if (snapshot.val() !== null) {
+        setData({ ...snapshot.val() });
+      } else {
+        setData({});
+      }
+    });
     return () => {
       setData({});
     };
@@ -54,7 +51,7 @@ function App() {
   // Delete Tweet
   const onDelete = (id) => {
     if (window.confirm("Are you sure you want to delete it ?")) {
-      fireDb.child(`Tweet/`).remove((err) => {
+      fireDb.child(`Tweet/${id}`).remove((err) => {
         if (err) {
           toast.error(err);
         } else {
@@ -86,7 +83,7 @@ function App() {
         </span>
       </div>
       <div>
-        {Object.values(data)
+        {Object.keys(data)
           .reverse()
           .map((id, index) => {
             return (
@@ -100,7 +97,7 @@ function App() {
                           <span className="username">
                             &nbsp; @User
                             <span className="tweet-time">
-                              &nbsp; · &nbsp; {id.created}
+                              &nbsp; · &nbsp; {data[id].created}
                             </span>
                           </span>
                         </span>
@@ -141,7 +138,7 @@ function App() {
                         </div>
                       </div>
                       <div className="tweet-text">
-                        <p>{id.content}</p>
+                        <p>{data[id].content}</p>
                       </div>
                       <div className="tweet-footer">
                         <span>
