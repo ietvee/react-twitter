@@ -9,7 +9,9 @@ import { useDetectOutsideClick } from "./useDetectOutsideClick";
 function App() {
   const [newTweet, setNewTweet] = useState("");
   const [data, setData] = useState({});
-  const timestamp = firebase.firestore.Timestamp.now().toDate().toUTCString();
+  const timestamp = firebase.firestore.Timestamp.now()
+    .toDate()
+    .toLocaleString();
   // Delete Toggle
   const dropdownRef = useRef(null);
   const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
@@ -27,7 +29,7 @@ function App() {
     setNewTweet(e.target.value);
   };
 
-  // Favorite Tweet - need enhancement
+  // Favorite Tweet - need to enhance
   const handleChangeFav = (id) => {
     setFav([...fav, id]);
   };
@@ -84,7 +86,8 @@ function App() {
         </span>
       </div>
       <div>
-        {Object.values(data).map((id, index) => {
+        {Object.values(data)
+        .map((id, index) => {
           return (
             <div key={index}>
               <ol className="tweet-list">
