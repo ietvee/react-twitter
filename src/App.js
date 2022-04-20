@@ -16,12 +16,14 @@ function App() {
   const dropdownRef = useRef(null);
   const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
   // Favorite Tweet
-  const [fav, setFav] = useState([]);
+  const [fav, setFav] = useState(false);
 
   // Add Tweet
   const createTweet = (e) => {
     e.preventDefault();
-    fireDb.child("Tweet").push({ content: newTweet, created: timestamp });
+    fireDb
+      .child("Tweet")
+      .push({ content: newTweet, created: timestamp, fav: fav });
     setNewTweet("");
   };
 
@@ -30,8 +32,15 @@ function App() {
   };
 
   // Favorite Tweet - need to enhance
-  const handleChangeFav = (id) => {
-    setFav([...fav, id]);
+  const handleChangeFav = (e, id) => {
+    // e.preventDefault();
+    if (!fav) {
+      setFav(!fav);
+      fireDb.child(`Tweet/${id}`).update({ fav: true });
+    } else {
+      setFav(fav);
+      fireDb.child(`Tweet/${id}`).update({ fav: false });
+    }
   };
 
   // Get Tweets
@@ -98,6 +107,7 @@ function App() {
                             &nbsp; @User
                             <span className="tweet-time">
                               &nbsp; · &nbsp; {data[id].created}
+                              {data[id].fav}
                             </span>
                           </span>
                         </span>
@@ -168,13 +178,11 @@ function App() {
                           <span> 0</span>
                         </span>
                         <button className="btn">
-                          <span onClick={() => handleChangeFav(index)}>
-                            {/* {fav.toString()} */}
-
+                          <span onClick={() => handleChangeFav(id)}>
                             <svg
                               width="20"
                               height="20"
-                              fill={fav.indexOf(index) >= 0 ? "red" : "black"}
+                              fill={data[id].fav === true ? "red" : "black"}
                               viewBox="0 0 24 24"
                               className="r-4qtqp9 r-yyyyoo r-1xvli5t r-dnmrzs r-bnwqim r-1plcrui r-lrvibr r-1hdv0qi"
                             >
