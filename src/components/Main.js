@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import "firebase/database";
-import fireDb from "./firebase.js";
+import fireDb from "../firebase.js";
 import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { toast } from "react-toastify";
-import { useDetectOutsideClick } from "./useDetectOutsideClick";
+import { useDetectOutsideClick } from "../useDetectOutsideClick";
 
-function App() {
+export default function Main() {
   const [newTweet, setNewTweet] = useState("");
   const [data, setData] = useState({});
   const timestamp = firebase.firestore.Timestamp.now()
@@ -203,5 +203,3 @@ function App() {
     </>
   );
 }
-
-export default App;
