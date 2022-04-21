@@ -1,22 +1,33 @@
 import React from "react";
 import Signup from "./Signup.js";
-import Main from "./Main.js";
+import Main from "./Dashboard.js";
+import Login from "./Login.js";
+
 import { Container } from "react-bootstrap";
 import { AuthProvider } from "../context/AuthContext";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
-    <AuthProvider>
+    <>
       <Container
         className="d-flex align-items-center justify-content-center"
         style={{ minHeight: "100vh" }}
       >
         <div className="w-100" style={{ maxWidth: "400px" }}>
-          <Signup />
+          <AuthProvider>
+            <BrowserRouter>
+              <Routes>
+                <Route exact path="/" element={<Main />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/login" element={<Login />} />
+              </Routes>
+            </BrowserRouter>
+          </AuthProvider>
         </div>
       </Container>
       {/* <Main /> */}
-    </AuthProvider>
+    </>
   );
 }
 
