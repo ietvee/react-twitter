@@ -5,8 +5,25 @@ import firebase from "firebase/compat/app";
 import "firebase/compat/firestore";
 import { toast } from "react-toastify";
 import { useDetectOutsideClick } from "../useDetectOutsideClick";
+import { Button, Alert } from "react-bootstrap";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export default function Main() {
+  const [error, setError] = useState("");
+  const { currentUser, logout } = useAuth();
+  const history = useNavigate();
+
+  async function handleLogout() {
+    setError("");
+    try {
+      await logout();
+      history("/login");
+    } catch {
+      setError("Failed to log out");
+    }
+  }
+
   const [newTweet, setNewTweet] = useState("");
   const [data, setData] = useState({});
   const timestamp = firebase.firestore.Timestamp.now()
@@ -72,6 +89,14 @@ export default function Main() {
 
   return (
     <>
+      <div>
+        <h2 className="text-center mb-4">Profile</h2>
+        {error && <Alert varaint="danger">{error}</Alert>}
+        <strong>Email: </strong> {currentUser.email}
+        <Button variant="link" onClick={handleLogout}>
+          Log Out
+        </Button>
+      </div>
       <div className="tweet-input">
         <input
           className="input"
