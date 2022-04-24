@@ -10,20 +10,6 @@ import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export default function Main() {
-  const [error, setError] = useState("");
-  const { currentUser, logout } = useAuth();
-  const history = useNavigate();
-
-  async function handleLogout() {
-    setError("");
-    try {
-      await logout();
-      history("/login");
-    } catch {
-      setError("Failed to log out");
-    }
-  }
-
   const [newTweet, setNewTweet] = useState("");
   const [data, setData] = useState({});
   const timestamp = firebase.firestore.Timestamp.now()
@@ -34,13 +20,18 @@ export default function Main() {
   const [isActive, setIsActive] = useDetectOutsideClick(dropdownRef, false);
   // Favorite Tweet
   const [fav, setFav] = useState(false);
+  const [error, setError] = useState("");
+  const { currentUser, logout } = useAuth();
+  const history = useNavigate();
 
   // Add Tweet
   const createTweet = (e) => {
     e.preventDefault();
-    fireDb
-      .child("Tweet")
-      .push({ content: newTweet, created: timestamp, fav: fav });
+    fireDb.child("Users").child(currentUser.uid).child("posts").push({
+      content: newTweet,
+      created: timestamp,
+      fav: fav,
+    });
     setNewTweet("");
   };
 
@@ -53,31 +44,52 @@ export default function Main() {
     // e.preventDefault();
     if (!fav) {
       setFav(!fav);
-      fireDb.child(`Tweet/${id}`).update({ fav: true });
+      fireDb
+        .child(`Users/${currentUser.uid}/posts/${id}`)
+        .update({ fav: true });
     } else {
       setFav(fav);
-      fireDb.child(`Tweet/${id}`).update({ fav: false });
+      fireDb
+        .child(`Users/${currentUser.uid}/posts/${id}`)
+        .update({ fav: false });
     }
   };
 
   // Get Tweets
   useEffect(() => {
-    fireDb.child("Tweet").on("value", (snapshot) => {
-      if (snapshot.val() !== null) {
-        setData({ ...snapshot.val() });
-      } else {
-        setData({});
-      }
-    });
-    return () => {
-      setData({});
-    };
-  }, []);
+    // Get Specific User's Posts
+    fireDb
+      .child("Users")
+      .child(currentUser.uid)
+      .child("posts")
+      .on("value", (snapshot) => {
+        if (snapshot.val() !== null) {
+          setData({ ...snapshot.val() });
+        } else {
+          setData({});
+        }
+      });
+
+    // todo: Get all posts from all users
+    // fireDb
+    //   .child("Users")
+    //   .on("value", (snapshot) => {
+    //     snapshot.forEach((gsnapshot) => {
+    //       console.log(gsnapshot.key);
+    //       gsnapshot
+    //         .child("posts")
+    //         .forEach((snapshot) => {
+    //           setData({ ...snapshot.val() });
+    //           console.log(JSON.stringify(snapshot.val()));
+    //         });
+    //     });
+    //   });
+  }, [currentUser.uid]);
 
   // Delete Tweet
   const onDelete = (id) => {
     if (window.confirm("Are you sure you want to delete it ?")) {
-      fireDb.child(`Tweet/${id}`).remove((err) => {
+      fireDb.child(`Users/${currentUser.uid}/posts/${id}`).remove((err) => {
         if (err) {
           toast.error(err);
         } else {
@@ -86,6 +98,17 @@ export default function Main() {
       });
     }
   };
+
+  // Logout
+  async function handleLogout() {
+    setError("");
+    try {
+      await logout();
+      history("/login");
+    } catch {
+      setError("Failed to log out");
+    }
+  }
 
   return (
     <>
@@ -129,10 +152,9 @@ export default function Main() {
                         <span className="fullname">
                           <strong>User User</strong>
                           <span className="username">
-                            &nbsp; @User
+                            &nbsp; @{data[id].user}
                             <span className="tweet-time">
                               &nbsp; · &nbsp; {data[id].created}
-                              {data[id].fav}
                             </span>
                           </span>
                         </span>
