@@ -40,19 +40,12 @@ export default function Main() {
   };
 
   // Favorite Tweet - need to enhance
-  const handleChangeFav = (e, id) => {
-    // e.preventDefault();
-    if (!fav) {
-      setFav(!fav);
-      fireDb
-        .child(`Users/${currentUser.uid}/posts/${id}`)
-        .update({ fav: true });
-    } else {
-      setFav(fav);
-      fireDb
-        .child(`Users/${currentUser.uid}/posts/${id}`)
-        .update({ fav: false });
-    }
+  const handleChangeFav = (id) => {
+    // todo: fav posts to new category
+    // fireDb.child(`Users/${currentUser.uid}/posts/${id}`).remove();
+    // fireDb.child(`Users/${currentUser.uid}/likedPosts/${id}`).push();
+    setFav(!fav);
+    fireDb.child(`Users/${currentUser.uid}/posts/${id}`).update({ fav: !fav });
   };
 
   // Get Tweets
@@ -224,8 +217,13 @@ export default function Main() {
                           </svg>
                           <span> 0</span>
                         </span>
-                        <button className="btn">
-                          <span onClick={() => handleChangeFav(id)}>
+                        <button
+                          className="btn"
+                          onClick={() => {
+                            handleChangeFav(id);
+                          }}
+                        >
+                          <span>
                             <svg
                               width="20"
                               height="20"
