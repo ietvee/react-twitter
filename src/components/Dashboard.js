@@ -87,7 +87,7 @@ export default function Main() {
         <div className="row">
           <div className="col-lg d-flex align-items-center justify-content-center tweet-profile">
             <div>
-              <h2 className="text-center mb-4">Hello! </h2>
+              <h2 className="text-center mb-4">Hello</h2>
               <p className="user"> {currentUser.email}</p>
               <button
                 className="btn-logout"
