@@ -1,3 +1,14 @@
+# React Twitter
+
+This is a react web application for you to login/signup to your account and create posts. Data are being stored using Firebase Realtime Database and using bootstrap and css for the user interface.
+
+
+### **Disclaimer**
+
+This project is developed with the intention of self-learning purpose and is developed by exploring online resources/materials from various learning platforms.
+
+-----
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
