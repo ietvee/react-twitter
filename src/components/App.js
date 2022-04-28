@@ -13,7 +13,7 @@ function App() {
       <Container className="d-flex align-items-center justify-content-center">
         <div className="" style={{ minWidth: "400px" }}>
           <AuthProvider>
-            <BrowserRouter>
+            <BrowserRouter basename="/react-twitter">
               <Routes>
                 <Route
                   path="/"
